@@ -1,9 +1,21 @@
 <!-- basic home page, nothing fancy -->
+<!-- this page is supposed to handle redirects from another page, there will be a query param (code) in the page, what we want is to read that query param and display on UI -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Home</title>
+    <script>
+        // get the query param from the URL
+        let queryParams = {}
+        const urlParams = new URLSearchParams(window.location.search);
+        const allQueryParams = urlParams.keys();
+        // iterate using above iterator
+        for (const key of allQueryParams) {
+            queryParams[key] = urlParams.get(key);
+        }
+
+        document.write(`<h2>Code: ${queryParams['code']}</h2>`);
+    </script>
 </head>
 <body>
-    <h1>Welcome to the home page</h1>
 </html>
