@@ -2,10 +2,51 @@
 <!-- this page is supposed to handle redirects from another page, there will be a query param (code) in the page, what we want is to read that query param and display on UI -->
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Home</title>
-    <script>
-        // get the query param from the URL
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-style: italic;
+            color: green;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <table id="queryTable">
+        <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+            <th>Copy to Clipboard</th>
+        </tr>
+    </table>
+</body>
+
+<script>
+    function getQueryParams() {
         let queryParams = {}
         const urlParams = new URLSearchParams(window.location.search);
         const allQueryParams = urlParams.keys();
@@ -13,9 +54,71 @@
         for (const key of allQueryParams) {
             queryParams[key] = urlParams.get(key);
         }
+        return queryParams;
+    }
 
-        document.write(`<h2>Code: ${queryParams['code']}</h2>`);
-    </script>
-</head>
-<body>
+    function populateTable(queryParams) {
+        const table = document.getElementById("queryTable");
+        for (const param in queryParams) {
+            const row = table.insertRow();
+            const paramNameCell = row.insertCell();
+            const paramValueCell = row.insertCell();
+            const copyButtonCell = row.insertCell();
+
+            paramNameCell.textContent = param;
+            paramValueCell.textContent = queryParams[param];
+
+            const copyButton = document.createElement('button');
+            copyButton.textContent = 'Copy';
+            copyButton.onclick = function (event) {
+                copyToClipboard(event, copyButton, queryParams[param]);
+            };
+            copyButtonCell.appendChild(copyButton);
+        }
+    }
+
+    function copyTextToClipboard(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
+    // Function to copy text to clipboard and show feedback
+    function copyToClipboard(event, button, text) {
+        copyTextToClipboard(text);
+
+        if (!event || !button) {
+            return;
+        }
+
+        // Change button text to "Copied" temporarily
+        button.textContent = 'Copied';
+
+        // Revert button text to "Copy" after 1 second
+        setTimeout(function () {
+            button.textContent = 'Copy';
+        }, 1000);
+    }
+
+    // Function to copy 'code' query parameter value on page load
+    function copyCodeOnLoad() {
+        const codeParamValue = getQueryParams()['code'];
+        if (codeParamValue) {
+            console.log('Copying code on page load:', codeParamValue);
+            copyToClipboard(null, null, codeParamValue);
+        }
+    }
+
+    window.onload = function () {
+        const queryParams = getQueryParams();
+        populateTable(queryParams);
+
+        // Copy 'code' query parameter value on page load
+        // copyCodeOnLoad(); // (for some reason this is not working, so commenting it out for now. it is logged in console though)
+    };
+</script>
+
 </html>
