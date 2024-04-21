@@ -36,13 +36,20 @@
 </head>
 
 <body>
-    <table id="queryTable">
-        <tr>
-            <th>Parameter</th>
-            <th>Value</th>
-            <th>Copy to Clipboard</th>
-        </tr>
-    </table>
+    <div id="queryParamsTableDiv">
+        <table id="queryTable">
+            <tr>
+                <th>Parameter</th>
+                <th>Value</th>
+                <th>Copy to Clipboard</th>
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="noParms">
+        <p>No query parameters found in URL</p>
+    </div>
 </body>
 
 <script>
@@ -114,6 +121,14 @@
 
     window.onload = function () {
         const queryParams = getQueryParams();
+
+        console.log('Query parameters:', queryParams);
+        if (Object.keys(queryParams).length === 0) {
+            document.getElementById('queryParamsTableDiv').style.display = 'none';
+        } else {
+            document.getElementById('noParms').style.display = 'none';
+        }
+
         populateTable(queryParams);
 
         // Copy 'code' query parameter value on page load
